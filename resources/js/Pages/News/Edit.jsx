@@ -6,10 +6,14 @@ import React, { useEffect, useState } from "react";
 export default function EditNews(props) {
     const [title, setTitle] = useState(props.myNews.title);
     const [description, setDescription] = useState(props.myNews.description);
-    const [category, setCategory] = useState(props.myNews.category_id);
-    const [tags, setTags] = useState(props.myNews.tags.map(tag => tag.name).join(", "));
+    const [selectedCategory, setSelectedCategory] = useState(props.myNews.category_id);
+    const [tags, setTags] = useState(props.myNews.tags.map((tag) => tag.name).join(", "));
     const [image, setImage] = useState(null);
     const [isNotif, setIsNotif] = useState(false);
+
+    const [errorTitle, setErrorTitle] = useState("");
+    const [errorDescription, setErrorDescription] = useState("");
+    const [errorTags, setErrorTags] = useState("");
 
     useEffect(() => {
         if (props.flash.message) {
@@ -25,6 +29,19 @@ export default function EditNews(props) {
     };
 
     const handleSubmit = () => {
+        setErrorTitle("");
+        setErrorDescription("");
+        setErrorTags("");
+        if (title.trim() === "") {
+            setErrorTitle("News is required");
+        }
+        if (description.trim() === "") {
+            setErrorDescription("Description is required");
+        }
+        if (tags.trim() === "") {
+            setErrorTags("Tags is required");
+        }
+
         const formData = new FormData();
         if (image) {
             formData.append("image", image);
@@ -32,10 +49,10 @@ export default function EditNews(props) {
         formData.append("title", title);
         formData.append("description", description);
 
-        const tagsArray = tags.split(',').map(tag => tag.trim());
+        const tagsArray = tags.split(",").map((tag) => tag.trim());
         formData.append("tags", tagsArray);
 
-        formData.append("category_id", category);
+        formData.append("category_id", selectedCategory);
         formData.append("_method", "PUT");
 
         Inertia.post(`/news/${props.myNews.id}`, formData);
@@ -101,12 +118,17 @@ export default function EditNews(props) {
                                     setTitle(event.target.value)
                                 }
                             />
+                            {errorTitle && (
+                                <div className="ml-4 text-error">
+                                    {errorTitle}
+                                </div>
+                            )}
 
                             <select
                                 className="m-2 select select-bordered w-full"
                                 defaultValue={props.myNews.category_id}
                                 onChange={(event) =>
-                                    setCategory(event.target.value)
+                                    setSelectedCategory(event.target.value)
                                 }
                             >
                                 <option value="" disabled>
@@ -135,14 +157,26 @@ export default function EditNews(props) {
                                     setDescription(event.target.value)
                                 }
                             ></textarea>
+                            {errorDescription && (
+                                <div className="ml-4 text-error">
+                                    {errorDescription}
+                                </div>
+                            )}
 
                             <input
                                 type="text"
                                 placeholder="Tags (separated by comma)"
                                 className="m-2 input input-bordered w-full"
                                 defaultValue={tags}
-                                onChange={(event) => setTags(event.target.value)}
+                                onChange={(event) =>
+                                    setTags(event.target.value)
+                                }
                             />
+                            {errorTags && (
+                                <div className="ml-4 text-error">
+                                    {errorTags}
+                                </div>
+                            )}
 
                             <button
                                 className="m-2 btn btn-primary w-full"

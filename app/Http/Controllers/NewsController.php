@@ -64,10 +64,8 @@ class NewsController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imagePath = $image->storeAs('public/news', $image->hashName());
-            $imageName = basename($imagePath);
-
-            $newsData['image'] = $imageName;
+            $imageName = $image->store('public/news');
+            $newsData['image'] = basename($imageName);
         }
 
         $news = News::create($newsData);

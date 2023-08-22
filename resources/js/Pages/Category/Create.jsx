@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 
 const CategoryCreate = (props) => {
     const [name, setName] = useState("");
+    const [error, setError] = useState("");
     const [isNotif, setIsNotif] = useState(props.flash.message);
 
     useEffect(() => {
@@ -17,6 +18,10 @@ const CategoryCreate = (props) => {
     })
 
     const handleSubmit = () => {
+        setError("");
+        if (name.trim() === "") {
+            setError("Category name is required")
+        }
         Inertia.post("/category", {
             name: name
         });
@@ -66,6 +71,7 @@ const CategoryCreate = (props) => {
                                 </span>
                             </div>
                         )}
+                        <label htmlFor="">Name</label>
                         <input
                             type="text"
                             placeholder="Category Name"
@@ -73,6 +79,10 @@ const CategoryCreate = (props) => {
                             value={name}
                             onChange={(event) => setName(event.target.value)}
                         />
+                        {error && (
+                            <div className="ml-4 text-error">{ error }</div>
+                        )}
+
                         <button
                             className="m-2 btn btn-primary w-full"
                             onClick={handleSubmit}

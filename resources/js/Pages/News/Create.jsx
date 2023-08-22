@@ -11,6 +11,11 @@ const PostCreate = (props) => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [isNotif, setIsNotif] = useState(false);
 
+    const [errorTitle, setErrorTitle] = useState("");
+    const [errorDescription, setErrorDescription] = useState("");
+    const [errorTags, setErrorTags] = useState("");
+    const [errorSelectedCategory, setErrorSelectedCategory] = useState("");
+
     useEffect(() => {
         if (props.flash.message) {
             setIsNotif(true);
@@ -25,6 +30,23 @@ const PostCreate = (props) => {
     };
 
     const handleSubmit = () => {
+        setErrorTitle("");
+        setErrorDescription("");
+        setErrorTags("");
+        setErrorSelectedCategory("");
+        if (title.trim() === "") {
+            setErrorTitle("News is required")
+        }
+        if (description.trim() === "") {
+            setErrorDescription("Description is required")
+        }
+        if (tags.trim() === "") {
+            setErrorTags("Tags is required")
+        }
+        if (selectedCategory.trim() === "") {
+            setErrorSelectedCategory("Category is required")
+        }
+
         const formData = new FormData();
         formData.append("title", title);
         formData.append("description", description);
@@ -90,6 +112,7 @@ const PostCreate = (props) => {
                             onChange={handleImageChange}
                             className="m-2 input input-bordered form-input rounded w-full"
                         />
+
                         <input
                             type="text"
                             placeholder="Title"
@@ -97,6 +120,10 @@ const PostCreate = (props) => {
                             value={title}
                             onChange={(event) => setTitle(event.target.value)}
                         />
+                        {errorTitle && (
+                            <div className="ml-4 text-error">{ errorTitle }</div>
+                        )}
+
                         <select
                             className="m-2 select select-bordered w-full"
                             value={selectedCategory}
@@ -113,6 +140,10 @@ const PostCreate = (props) => {
                                 </option>
                             ))}
                         </select>
+                        {errorSelectedCategory && (
+                            <div className="ml-4 text-error">{ errorSelectedCategory }</div>
+                        )}
+
                         <textarea
                             type="text"
                             placeholder="Deskripsi"
@@ -123,6 +154,10 @@ const PostCreate = (props) => {
                                 setDescription(event.target.value)
                             }
                         ></textarea>
+                        {errorDescription && (
+                            <div className="ml-4 text-error">{ errorDescription }</div>
+                        )}
+
                         <input
                             type="text"
                             placeholder="Tags (separated by comma)"
@@ -130,6 +165,10 @@ const PostCreate = (props) => {
                             value={tags}
                             onChange={(event) => setTags(event.target.value)}
                         />
+                        {errorTags && (
+                            <div className="ml-4 text-error">{ errorTags }</div>
+                        )}
+
                         <button
                             className="m-2 btn btn-primary w-full"
                             onClick={handleSubmit}
