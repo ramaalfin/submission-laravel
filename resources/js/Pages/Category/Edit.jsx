@@ -1,32 +1,25 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { Inertia } from "@inertiajs/inertia";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 const CategoryEdit = (props) => {
-    const [name, setName] = useState(props.category.name);
-    const [error, setError] = useState("");
-    const [isNotif, setIsNotif] = useState(props.flash.message);
+    const { flash, errors } = usePage().props;
+    const { data, setData, put } = useForm({ name: "" });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        put(`/category/${props.category.id}`);
+    }
 
     useEffect(() => {
-        if (isNotif) {
+        if (flash.message) {
             const timeout = setTimeout(() => {
-                setIsNotif("")
+                Inertia.reload({ only: ["flash"] });
             }, 2000);
             return () => clearTimeout(timeout);
         }
-    })
-
-    const handleSubmit = () => {
-        setError("");
-        if (name.trim() === "") {
-            setError("Category name is required");
-        }
-        Inertia.put(`/category/${props.category.id}`, {
-            name: name
-        });
-        setName("");
-    }
+    }, [flash.message]);
 
     return(
         <div className="min-h-screen bg-slate-50">
@@ -52,7 +45,7 @@ const CategoryEdit = (props) => {
             >
                 <div className="max-w-7xl mx-auto mt-4 sm:px-6 lg:px-8">
                     <div className="p-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    {isNotif && (
+                    {flash.message && (
                             <div className="alert alert-success">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -68,11 +61,12 @@ const CategoryEdit = (props) => {
                                     />
                                 </svg>
                                 <span>
-                                    {props.flash.message}
+                                    {flash.message}
                                 </span>
                             </div>
                         )}
 
+                        <label htmlFor="name">Name</label>
                         <input
                             type="text"
                             placeholder="Category Name"
@@ -80,9 +74,7 @@ const CategoryEdit = (props) => {
                             defaultValue={props.category.name}
                             onChange={(event) => setName(event.target.value)}
                         />
-                        {error && (
-                            <div className="ml-4 text-error">{ error }</div>
-                        )}
+                        { errors.name && <div className="text-error ml-2">{errors.name}</div> }
                         <button
                             className="m-2 btn btn-primary w-full"
                             onClick={handleSubmit}
