@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 
 const CategoryEdit = (props) => {
     const { flash, errors } = usePage().props;
-    const { data, setData, put } = useForm({ name: "" });
+    const { data, setData, put } = useForm({ name: props.category.name });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -71,8 +71,8 @@ const CategoryEdit = (props) => {
                             type="text"
                             placeholder="Category Name"
                             className="m-2 input input-bordered w-full"
-                            defaultValue={props.category.name}
-                            onChange={(event) => setName(event.target.value)}
+                            defaultValue={data.name}
+                            onChange={(e) => setData("name", e.target.value)}
                         />
                         { errors.name && <div className="text-error ml-2">{errors.name}</div> }
                         <button
