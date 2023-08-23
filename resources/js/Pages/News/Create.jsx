@@ -1,73 +1,37 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import React, { useEffect, useState } from "react";
 import { Inertia } from "@inertiajs/inertia";
-import { Head, Link } from "@inertiajs/react";
+import React, { useEffect } from "react";
+import { Head, Link, usePage, useForm } from "@inertiajs/react";
 
-const PostCreate = (props) => {
-    const [image, setImage] = useState(null);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [tags, setTags] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [isNotif, setIsNotif] = useState(false);
+const PostCreate = () => {
+    const { myNews, categories, title, auth, flash } = usePage().props;
+    const { data, setData, post, processing, progress, errors: formErrors } = useForm({
+        image: null,
+        title: "",
+        description: "",
+        tags: "",
+        category_id: "",
+    });
 
-    const [errorTitle, setErrorTitle] = useState("");
-    const [errorDescription, setErrorDescription] = useState("");
-    const [errorTags, setErrorTags] = useState("");
-    const [errorSelectedCategory, setErrorSelectedCategory] = useState("");
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post('/news');
+    };
 
     useEffect(() => {
-        if (props.flash.message) {
-            setIsNotif(true);
-            setTimeout(() => {
-                setIsNotif(false);
+        if (flash.message) {
+            const timeout = setTimeout(() => {
+                Inertia.reload({ only: ["flash"] });
             }, 2000);
+            return () => clearTimeout(timeout);
         }
-    }, [props.flash.message]);
+    }, [flash.message]);
 
-    const handleImageChange = (event) => {
-        setImage(event.target.files[0]);
-    };
-
-    const handleSubmit = () => {
-        setErrorTitle("");
-        setErrorDescription("");
-        setErrorTags("");
-        setErrorSelectedCategory("");
-        if (title.trim() === "") {
-            setErrorTitle("News is required")
-        }
-        if (description.trim() === "") {
-            setErrorDescription("Description is required")
-        }
-        if (tags.trim() === "") {
-            setErrorTags("Tags is required")
-        }
-        if (selectedCategory.trim() === "") {
-            setErrorSelectedCategory("Category is required")
-        }
-
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("tags", tags);
-        formData.append("category_id", selectedCategory);
-        if (image) {
-            formData.append("image", image);
-        }
-
-        Inertia.post("/news", formData);
-        setImage(null);
-        setTitle("");
-        setDescription("");
-        setTags("");
-        setSelectedCategory("");
-    };
     return (
         <div className="min-h-screen bg-slate-50">
-            <Head title={props.title} />
+            <Head title={title} />
             <AuthenticatedLayout
-                user={props.auth.user}
+                user={auth.user}
                 header={
                     <div className="flex">
                         <Link
@@ -87,7 +51,7 @@ const PostCreate = (props) => {
             >
                 <div className="max-w-7xl mx-auto mt-4 sm:px-6 lg:px-8">
                     <div className="p-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        {isNotif && (
+                        {flash.message && (
                             <div className="alert alert-success mb-4">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -102,79 +66,116 @@ const PostCreate = (props) => {
                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                                     />
                                 </svg>
-                                <span>
-                                    {props.flash.message}
-                                </span>
+                                <span>{flash.message}</span>
                             </div>
                         )}
-                        <input
-                            type="file"
-                            onChange={handleImageChange}
-                            className="m-2 input input-bordered form-input rounded w-full"
-                        />
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-4">
+                                <label className="ml-2 form-control" htmlFor="image">Input Image</label>
+                                <input
+                                    type="file"
+                                    name="image"
+                                    onChange={e => setData('image', e.target.files[0])}
+                                    className="m-2 input input-bordered form-input rounded w-full"
+                                />
+                                {progress && (
+                                    <progress value={progress.percentage} max="100">
+                                        {progress.percentage}%
+                                    </progress>
+                                )}
+                            </div>
 
-                        <input
-                            type="text"
-                            placeholder="Title"
-                            className="m-2 input input-bordered w-full"
-                            value={title}
-                            onChange={(event) => setTitle(event.target.value)}
-                        />
-                        {errorTitle && (
-                            <div className="ml-4 text-error">{ errorTitle }</div>
-                        )}
+                            <div className="mb-4">
+                                <label className="ml-2 form-control" htmlFor="title">Title</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    placeholder="Title"
+                                    className="m-2 input input-bordered w-full"
+                                    value={data.title}
+                                    onChange={(event) =>
+                                        setData("title", event.target.value)
+                                    }
+                                />
+                                {formErrors.title && (
+                                    <div className="text-error ml-2">
+                                        {formErrors.title}
+                                    </div>
+                                )}
+                            </div>
 
-                        <select
-                            className="m-2 select select-bordered w-full"
-                            value={selectedCategory}
-                            onChange={(event) =>
-                                setSelectedCategory(event.target.value)
-                            }
-                        >
-                            <option value="" disabled>
-                                Choice the category
-                            </option>
-                            {props.categories.map((data) => (
-                                <option key={data.id} value={data.id}>
-                                    {data.name}
-                                </option>
-                            ))}
-                        </select>
-                        {errorSelectedCategory && (
-                            <div className="ml-4 text-error">{ errorSelectedCategory }</div>
-                        )}
+                            <div className="mb-4">
+                                <label className="ml-2 form-control" htmlFor="select_category">Select Category</label>
+                                <select
+                                    id="category_id"
+                                    name="category_id"
+                                    className="m-2 select select-bordered w-full"
+                                    value={data.category_id}
+                                    onChange={(event) =>
+                                        setData("category_id", event.target.value)
+                                    }
+                                >
+                                    <option value="" disabled>
+                                        Choice the category
+                                    </option>
+                                    {categories.map((data) => (
+                                        <option key={data.id} value={data.id}>
+                                            {data.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {formErrors.category_id && (
+                                    <div className="text-error ml-2">
+                                        {formErrors.category_id}
+                                    </div>
+                                )}
+                            </div>
 
-                        <textarea
-                            type="text"
-                            placeholder="Deskripsi"
-                            style={{ height: `${5 * 1.5}rem` }}
-                            className="m-2 input input-bordered w-full"
-                            value={description}
-                            onChange={(event) =>
-                                setDescription(event.target.value)
-                            }
-                        ></textarea>
-                        {errorDescription && (
-                            <div className="ml-4 text-error">{ errorDescription }</div>
-                        )}
+                            <div className="mb-4">
+                                <label className="ml-2 form-control" htmlFor="description">Description</label>
+                                <textarea
+                                    type="text"
+                                    placeholder="Deskripsi"
+                                    style={{ height: `${5 * 1.5}rem` }}
+                                    className="m-2 input input-bordered w-full"
+                                    value={data.description}
+                                    onChange={(event) =>
+                                        setData("description", event.target.value)
+                                    }
+                                ></textarea>
+                                {formErrors.description && (
+                                    <div className="text-error ml-2">
+                                        {formErrors.description}
+                                    </div>
+                                )}
+                            </div>
 
-                        <input
-                            type="text"
-                            placeholder="Tags (separated by comma)"
-                            className="m-2 input input-bordered w-full"
-                            value={tags}
-                            onChange={(event) => setTags(event.target.value)}
-                        />
-                        {errorTags && (
-                            <div className="ml-4 text-error">{ errorTags }</div>
-                        )}
+                            <div className="mb-4">
+                                <label className="ml-2 form-control" htmlFor="tags">Tags</label>
+                                <input
+                                    type="text"
+                                    placeholder="Tags (separated by comma)"
+                                    className="m-2 input input-bordered w-full"
+                                    value={data.tags}
+                                    onChange={(event) =>
+                                        setData("tags", event.target.value)
+                                    }
+                                />
+                                {formErrors.tags && (
+                                    <div className="text-error ml-2">
+                                        {formErrors.tags}
+                                    </div>
+                                )}
+                            </div>
 
-                        <button
-                            className="m-2 btn btn-primary w-full"
-                            onClick={handleSubmit}
-                        >
-                            Submit
-                        </button>
+                            <button
+                                className="m-2 btn btn-primary w-full"
+                                disabled={processing}
+                            >
+                                {processing ? "Submitting..." : "Submit"}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </AuthenticatedLayout>
