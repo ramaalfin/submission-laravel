@@ -4,12 +4,12 @@ import { Inertia } from "@inertiajs/inertia";
 import React, { useEffect } from "react";
 
 const CategoryEdit = (props) => {
-    const { flash, errors } = usePage().props;
-    const { data, setData, put } = useForm({ name: props.category.name });
+    const { category, flash, errors } = usePage().props;
+    const { data, setData, put, processing } = useForm({ name: props.category.name });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/category/${props.category.id}`);
+        put(route("category.update", category.id));
     }
 
     useEffect(() => {
@@ -66,21 +66,23 @@ const CategoryEdit = (props) => {
                             </div>
                         )}
 
-                        <label htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            placeholder="Category Name"
-                            className="m-2 input input-bordered w-full"
-                            defaultValue={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
-                        />
-                        { errors.name && <div className="text-error ml-2">{errors.name}</div> }
-                        <button
-                            className="m-2 btn btn-primary w-full"
-                            onClick={handleSubmit}
-                        >
-                            Update
-                        </button>
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type="text"
+                                placeholder="Category Name"
+                                className="m-2 input input-bordered w-full"
+                                defaultValue={data.name}
+                                onChange={(e) => setData("name", e.target.value)}
+                            />
+                            { errors.name && <div className="text-error ml-2">{errors.name}</div> }
+                            <button
+                                className="m-2 btn btn-primary w-full"
+                                disabled={processing}
+                            >
+                                {processing ? "Submitting..." : "Submit"}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </AuthenticatedLayout>
