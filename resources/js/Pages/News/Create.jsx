@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { Head, Link, usePage, useForm } from "@inertiajs/react";
 
 const PostCreate = () => {
-    const { myNews, categories, title, auth, flash } = usePage().props;
-    const { data, setData, post, processing, progress, errors: formErrors } = useForm({
+    const { categories, title, auth, flash, errors} = usePage().props;
+    const { data, setData, post, processing, progress} = useForm({
         image: null,
         title: "",
         description: "",
@@ -15,7 +15,7 @@ const PostCreate = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/news');
+        post(route('news.store'));
     };
 
     useEffect(() => {
@@ -98,9 +98,9 @@ const PostCreate = () => {
                                         setData("title", event.target.value)
                                     }
                                 />
-                                {formErrors.title && (
+                                {errors.title && (
                                     <div className="text-error ml-2">
-                                        {formErrors.title}
+                                        {errors.title}
                                     </div>
                                 )}
                             </div>
@@ -125,9 +125,9 @@ const PostCreate = () => {
                                         </option>
                                     ))}
                                 </select>
-                                {formErrors.category_id && (
+                                {errors.category_id && (
                                     <div className="text-error ml-2">
-                                        {formErrors.category_id}
+                                        {errors.category_id}
                                     </div>
                                 )}
                             </div>
@@ -144,9 +144,9 @@ const PostCreate = () => {
                                         setData("description", event.target.value)
                                     }
                                 ></textarea>
-                                {formErrors.description && (
+                                {errors.description && (
                                     <div className="text-error ml-2">
-                                        {formErrors.description}
+                                        {errors.description}
                                     </div>
                                 )}
                             </div>
@@ -162,9 +162,9 @@ const PostCreate = () => {
                                         setData("tags", event.target.value)
                                     }
                                 />
-                                {formErrors.tags && (
+                                {errors.tags && (
                                     <div className="text-error ml-2">
-                                        {formErrors.tags}
+                                        {errors.tags}
                                     </div>
                                 )}
                             </div>

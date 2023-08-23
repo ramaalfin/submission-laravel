@@ -175,7 +175,7 @@ export default function EditNews() {
 
                                 <button
                                     className="m-2 btn btn-primary w-full"
-                                    onClick={handleSubmit}disabled={processing}
+                                    disabled={processing}
                                     >
                                         {processing ? "Submitting..." : "Submit"}
                                 </button>

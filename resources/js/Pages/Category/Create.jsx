@@ -3,13 +3,13 @@ import { Inertia } from "@inertiajs/inertia";
 import React, { useEffect } from "react";
 import { Head, Link, usePage, useForm } from "@inertiajs/react";
 
-const CategoryCreate = (props) => {
-    const { flash, errors } = usePage().props;
-    const { data, setData, post } = useForm({ name: "" });
+const CategoryCreate = () => {
+    const { title, auth, flash, errors } = usePage().props;
+    const { data, setData, processing, post } = useForm({ name: "" });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post("/category", data);
+        post(route('category.store'));
     };
 
     useEffect(() => {
@@ -23,9 +23,9 @@ const CategoryCreate = (props) => {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <Head title={props.title} />
+            <Head title={title} />
             <AuthenticatedLayout
-                user={props.auth.user}
+                user={auth.user}
                 header={
                     <div className="flex items-center">
                         <Link
@@ -64,24 +64,26 @@ const CategoryCreate = (props) => {
                             </div>
                         )}
 
-                        <label htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            placeholder="Category Name"
-                            className="m-2 input input-bordered w-full"
-                            value={data.name}
-                            onChange={(e) => setData("name", e.target.value)}
-                        />
-                        {errors.name && <div className="text-error ml-2">{errors.name}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="name">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Category Name"
+                                className="m-2 input input-bordered w-full"
+                                value={data.name}
+                                onChange={(e) => setData("name", e.target.value)}
+                            />
+                            {errors.name && <div className="text-error ml-2">{errors.name}</div>}
 
-                        <button
-                            className="m-2 btn btn-primary w-full"
-                            onClick={handleSubmit}
-                        >
-                            Submit
-                        </button>
+                            <button
+                                className="m-2 btn btn-primary w-full"
+                                disabled={processing}
+                            >
+                                {processing ? "Submitting..." : "Submit"}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </AuthenticatedLayout>
