@@ -30,7 +30,7 @@ const isMyNewsList = (myNews) => {
                 <h2 className="card-title">
                     {items.title}
                 </h2>
-                <p>{items.description}</p>
+                <div dangerouslySetInnerHTML={{ __html: items.description }}></div>
                 <div className="flex justify-between">
                     <div className="">
                         <div className="badge">

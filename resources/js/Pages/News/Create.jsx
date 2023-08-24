@@ -2,21 +2,18 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Inertia } from "@inertiajs/inertia";
 import React, { useEffect } from "react";
 import { Head, Link, usePage, useForm } from "@inertiajs/react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const PostCreate = () => {
-    const { categories, title, auth, flash, errors} = usePage().props;
-    const { data, setData, post, processing, progress} = useForm({
+    const { categories, title, auth, flash, errors } = usePage().props;
+    const { data, setData, post, processing, progress } = useForm({
         image: null,
         title: "",
         description: "",
         tags: "",
         category_id: "",
     });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        post(route('news.store'));
-    };
 
     useEffect(() => {
         if (flash.message) {
@@ -26,6 +23,11 @@ const PostCreate = () => {
             return () => clearTimeout(timeout);
         }
     }, [flash.message]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route("news.store"));
+    };
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -71,22 +73,37 @@ const PostCreate = () => {
                         )}
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
-                                <label className="ml-2 form-control" htmlFor="image">Input Image</label>
+                                <label
+                                    className="ml-2 form-control"
+                                    htmlFor="image"
+                                >
+                                    Input Image
+                                </label>
                                 <input
                                     type="file"
                                     name="image"
-                                    onChange={e => setData('image', e.target.files[0])}
+                                    onChange={(e) =>
+                                        setData("image", e.target.files[0])
+                                    }
                                     className="m-2 input input-bordered form-input rounded w-full"
                                 />
                                 {progress && (
-                                    <progress value={progress.percentage} max="100">
+                                    <progress
+                                        value={progress.percentage}
+                                        max="100"
+                                    >
                                         {progress.percentage}%
                                     </progress>
                                 )}
                             </div>
 
                             <div className="mb-4">
-                                <label className="ml-2 form-control" htmlFor="title">Title</label>
+                                <label
+                                    className="ml-2 form-control"
+                                    htmlFor="title"
+                                >
+                                    Title
+                                </label>
                                 <input
                                     type="text"
                                     id="title"
@@ -106,14 +123,22 @@ const PostCreate = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="ml-2 form-control" htmlFor="select_category">Select Category</label>
+                                <label
+                                    className="ml-2 form-control"
+                                    htmlFor="select_category"
+                                >
+                                    Select Category
+                                </label>
                                 <select
                                     id="category_id"
                                     name="category_id"
                                     className="m-2 select select-bordered w-full"
                                     value={data.category_id}
                                     onChange={(event) =>
-                                        setData("category_id", event.target.value)
+                                        setData(
+                                            "category_id",
+                                            event.target.value
+                                        )
                                     }
                                 >
                                     <option value="" disabled>
@@ -133,17 +158,32 @@ const PostCreate = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="ml-2 form-control" htmlFor="description">Description</label>
-                                <textarea
-                                    type="text"
-                                    placeholder="Deskripsi"
-                                    style={{ height: `${5 * 1.5}rem` }}
-                                    className="m-2 input input-bordered w-full"
+                                <label
+                                    className="ml-2 form-control"
+                                    htmlFor="description"
+                                >
+                                    Description
+                                </label>
+                                <ReactQuill
+                                    placeholder="Description"
                                     value={data.description}
-                                    onChange={(event) =>
-                                        setData("description", event.target.value)
+                                    onChange={(value) =>
+                                        setData(
+                                            "description",
+                                            value
+                                        )
                                     }
-                                ></textarea>
+                                    modules={{
+                                        toolbar: [
+                                            [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                            ['bold', 'italic', 'underline'],
+                                            [{ 'color': [] }, { 'background': [] }],
+                                            ['link'],
+                                            ['clean']
+                                        ]
+                                     }}
+                                ></ReactQuill>
                                 {errors.description && (
                                     <div className="text-error ml-2">
                                         {errors.description}
@@ -152,7 +192,12 @@ const PostCreate = () => {
                             </div>
 
                             <div className="mb-4">
-                                <label className="ml-2 form-control" htmlFor="tags">Tags</label>
+                                <label
+                                    className="ml-2 form-control"
+                                    htmlFor="tags"
+                                >
+                                    Tags
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="Tags (separated by comma)"
