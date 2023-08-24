@@ -1,11 +1,17 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export default function EditNews(props) {
-    const [ selectedCategoryId, setSelectedCategoryId] = useState(props.news.category_id);
+    const [selectedCategoryId, setSelectedCategoryId] = useState(
+        props.news.category_id
+    );
 
-    const selectedCategory = props.categories.find(category => category.id == selectedCategoryId);
+    const selectedCategory = props.categories.find(
+        (category) => category.id == selectedCategoryId
+    );
 
     return (
         <div className="min-h-screen bg-slate-50 ">
@@ -14,11 +20,7 @@ export default function EditNews(props) {
                 user={props.auth.user}
                 header={
                     <div className="flex">
-                        <Link
-                            href={route("home")}
-                            method="get"
-                            as="button"
-                        >
+                        <Link href={route("home")} method="get" as="button">
                             Home
                         </Link>{" "}
                         <span className="mx-2">/</span>
@@ -46,17 +48,42 @@ export default function EditNews(props) {
                                 readOnly
                             />
 
-                            <input type="text" className="m-2 input input-bordered w-full" defaultValue={ selectedCategory ? selectedCategory.name : "" } readOnly/>
-
-                            <textarea
+                            <input
                                 type="text"
-                                placeholder="Deskripsi"
                                 className="m-2 input input-bordered w-full"
-                                style={{ height: `${5 * 1.5}rem` }}
-                                defaultValue={props.news.description}
+                                defaultValue={
+                                    selectedCategory
+                                        ? selectedCategory.name
+                                        : ""
+                                }
                                 readOnly
-                            ></textarea>
+                            />
 
+                            <ReactQuill
+                                readOnly
+                                placeholder="Description"
+                                defaultValue={props.news.description}
+                                onChange={(value) =>
+                                    setData("description", value)
+                                }
+                                modules={{
+                                    toolbar: [
+                                        [
+                                            { header: "1" },
+                                            { header: "2" },
+                                            { font: [] },
+                                        ],
+                                        [
+                                            { list: "ordered" },
+                                            { list: "bullet" },
+                                        ],
+                                        ["bold", "italic", "underline"],
+                                        [{ color: [] }, { background: [] }],
+                                        ["link"],
+                                        ["clean"],
+                                    ],
+                                }}
+                            ></ReactQuill>
                         </div>
                     </div>
                 </div>
