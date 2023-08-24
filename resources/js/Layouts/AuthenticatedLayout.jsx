@@ -91,7 +91,7 @@ export default function Authenticated({ user, header, children }) {
                                         >
                                             Tags
                                         </Dropdown.Link>
-                                    <Dropdown.Link
+                                        <Dropdown.Link
                                             href={route("logout")}
                                             method="post"
                                             as="button"
@@ -175,6 +175,31 @@ export default function Authenticated({ user, header, children }) {
                             <ResponsiveNavLink href={route("profile.edit")}>
                                 Profile
                             </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                href={route('news.create')}
+                                className="justify-between"
+                                as="button"
+                            >
+                                Create News
+                            </ResponsiveNavLink>
+                            {user.role === 'admin' && (
+                                <>
+                                    <ResponsiveNavLink
+                                        href={route('category.index')}
+                                        className="justify-between"
+                                        as="button"
+                                    >
+                                        Category
+                                    </ResponsiveNavLink>
+                                    <ResponsiveNavLink
+                                        href={route('tag.index')}
+                                        className="justify-between"
+                                        as="button"
+                                    >
+                                        Tags
+                                    </ResponsiveNavLink>
+                                </>
+                            )}
                             <ResponsiveNavLink
                                 method="post"
                                 href={route("logout")}
