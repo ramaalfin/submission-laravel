@@ -14,8 +14,7 @@ const isNews = (news) => {
                 )}
                 <div className="card-body">
                     <h2 className="card-title">{data.title}</h2>
-                    <p>{data.description}</p>
-
+                    <div dangerouslySetInnerHTML={{ __html: data.description }}></div>
                     <div className="card-actions justify-between">
                         <div>
                             <Link href={route("news.show", { news: data.id })}>

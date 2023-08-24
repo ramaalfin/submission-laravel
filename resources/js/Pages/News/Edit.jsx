@@ -2,6 +2,8 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Inertia } from "@inertiajs/inertia";
 import React, { useEffect } from "react";
 import { Head, Link, usePage, useForm } from "@inertiajs/react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export default function EditNews() {
     const { myNews, categories, title, auth, flash } = usePage().props;
@@ -13,11 +15,6 @@ export default function EditNews() {
         tags: myNews.tags.map((tag) => tag.name).join(", "),
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        put(route("news.update", myNews.id));
-    };
-
     useEffect(() => {
         if (flash.message) {
             const timeout = setTimeout(() => {
@@ -26,6 +23,12 @@ export default function EditNews() {
             return () => clearTimeout(timeout);
         }
     }, [flash.message]);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        put(route("news.update", myNews.id));
+    };
+
 
     return (
         <div className="min-h-screen bg-slate-50 ">
@@ -138,16 +141,26 @@ export default function EditNews() {
 
                                 <div className="mb-4">
                                     <label className="ml-2 form-control" htmlFor="description">Description</label>
-                                    <textarea
-                                        type="text"
+                                    <ReactQuill
                                         placeholder="Description"
-                                        className="m-2 input input-bordered w-full"
-                                        style={{ height: `${5 * 1.5}rem` }}
                                         defaultValue={data.description}
-                                        onChange={(event) =>
-                                            setData('description', event.target.value)
+                                        onChange={(value) =>
+                                            setData(
+                                                "description",
+                                                value
+                                            )
                                         }
-                                    ></textarea>
+                                        modules={{
+                                            toolbar: [
+                                                [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                                ['bold', 'italic', 'underline'],
+                                                [{ 'color': [] }, { 'background': [] }],
+                                                ['link'],
+                                                ['clean']
+                                            ]
+                                        }}
+                                    ></ReactQuill>
                                     {formErrors.description && (
                                         <div className="text-error ml-2">
                                             {formErrors.description}
