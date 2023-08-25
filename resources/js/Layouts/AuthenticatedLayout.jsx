@@ -29,7 +29,7 @@ export default function Authenticated({ user, header, children }) {
                                     My News
                                 </NavLink>
                                 <NavLink
-                                    href={route('about')}
+                                    href={route("about")}
                                     active={route().current("about")}
                                 >
                                     About me
@@ -71,26 +71,32 @@ export default function Authenticated({ user, header, children }) {
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('news.create')}
+                                            href={route("news.create")}
                                             className="justify-between"
                                             as="button"
                                         >
                                             Create News
                                         </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('category.index')}
-                                            className="justify-between"
-                                            as="button"
-                                        >
-                                            Category
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('tag.index')}
-                                            className="justify-between"
-                                            as="button"
-                                        >
-                                            Tags
-                                        </Dropdown.Link>
+                                        {user.role === "admin" && (
+                                            <>
+                                                <Dropdown.Link
+                                                    href={route(
+                                                        "category.index"
+                                                    )}
+                                                    className="justify-between"
+                                                    as="button"
+                                                >
+                                                    Category
+                                                </Dropdown.Link>
+                                                <Dropdown.Link
+                                                    href={route("tag.index")}
+                                                    className="justify-between"
+                                                    as="button"
+                                                >
+                                                    Tags
+                                                </Dropdown.Link>
+                                            </>
+                                        )}
                                         <Dropdown.Link
                                             href={route("logout")}
                                             method="post"
@@ -176,23 +182,23 @@ export default function Authenticated({ user, header, children }) {
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                href={route('news.create')}
+                                href={route("news.create")}
                                 className="justify-between"
                                 as="button"
                             >
                                 Create News
                             </ResponsiveNavLink>
-                            {user.role === 'admin' && (
+                            {user.role === "admin" && (
                                 <>
                                     <ResponsiveNavLink
-                                        href={route('category.index')}
+                                        href={route("category.index")}
                                         className="justify-between"
                                         as="button"
                                     >
                                         Category
                                     </ResponsiveNavLink>
                                     <ResponsiveNavLink
-                                        href={route('tag.index')}
+                                        href={route("tag.index")}
                                         className="justify-between"
                                         as="button"
                                     >
