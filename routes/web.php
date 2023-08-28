@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProfileController;
@@ -22,6 +23,10 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
     Route::get('/about-me', [AboutController::class, 'index'])->name('about');
 });
+
+Route::get('/auth/{provider}/redirect', [ProviderController::class, 'redirect']);
+
+Route::get('/auth/{provider}/callback', [ProviderController::class, 'callback']);
 
 require __DIR__.'/auth.php';
 
